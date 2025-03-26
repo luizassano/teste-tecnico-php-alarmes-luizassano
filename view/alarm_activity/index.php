@@ -70,13 +70,13 @@ if (!isset($sortUrls)) {
                                    value="<?= htmlspecialchars($filters['equipment'] ?? '') ?>">
                         </div>
                         <div class="col-md-2">
-                            <label for="status" class="form-label">Status</label>
-                            <select class="form-select" id="status" name="status">
-                                <option value="">All</option>
-                                <option value="active" <?= ($filters['status'] ?? '') === 'active' ? 'selected' : '' ?>>Active</option>
-                                <option value="inactive" <?= ($filters['status'] ?? '') === 'inactive' ? 'selected' : '' ?>>Inactive</option>
-                            </select>
-                        </div>
+    <label for="status" class="form-label">Status</label>
+    <select class="form-select" id="status" name="status">
+        <option value="">All</option>
+        <option value="active" <?= ($filters['status'] ?? '') === 'active' ? 'selected' : '' ?>>Active</option>
+        <option value="inactive" <?= ($filters['status'] ?? '') === 'inactive' ? 'selected' : '' ?>>Inactive</option>
+    </select>
+</div>
                         <div class="col-md-2 d-flex align-items-end">
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="bi bi-funnel"></i> Filter

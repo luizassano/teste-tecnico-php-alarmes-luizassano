@@ -1,6 +1,5 @@
 <?php
-session_start(); // Adicione esta linha no topo
-
+session_start(); 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/controllers/EquipmentController.php';
 require_once __DIR__ . '/controllers/AlarmController.php';

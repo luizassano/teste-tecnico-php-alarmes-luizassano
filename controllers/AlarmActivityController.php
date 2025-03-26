@@ -33,22 +33,17 @@ class AlarmActivityController
             if (!is_array($topAlarms)) {
                 $topAlarms = [];
             }
-
+    
             $sortUrls = [
                 'started_at' => $this->buildSortUrl('started_at'),
                 'duration_seconds' => $this->buildSortUrl('duration_seconds')
             ];
-
-            $viewPath = __DIR__ . '/../view/alarm_activity/index.php';
-            if (!file_exists($viewPath)) {
-                throw new Exception("Arquivo de view não encontrado: $viewPath");
-            }
-            
-            require $viewPath;
-
+    
+            require __DIR__ . '/../view/alarm_activity/index.php';
+    
         } catch (Exception $e) {
             Logger::log("Error in AlarmActivityController: " . $e->getMessage());
-            $_SESSION['error'] = "Erro ao carregar histórico de alarmes";
+            $_SESSION['error'] = "Error loading alarm history";
             header('Location: ' . BASE_URL . '/?route=alarm');
             exit;
         }

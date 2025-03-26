@@ -57,7 +57,6 @@ class AlarmController
                 Logger::log("Activated alarm ID $id");
                 $_SESSION['success'] = "Alarm activated successfully!";
                 
-                // Notificação para alarmes urgentes
                 if ($alarm['classification'] === 'Urgent') {
                     $equipment = $this->equipmentModel->getById($alarm['equipment_id']);
                     $message = "Urgent Alarm Activated:\n";

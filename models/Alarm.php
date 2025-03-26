@@ -47,24 +47,16 @@ class Alarm
         try {
             $this->conn->beginTransaction();
     
-            // 1. Atualiza o status do alarme para 'on'
             $stmt = $this->conn->prepare("
                 UPDATE alarms 
                 SET status = 'on' 
-                WHERE id = :id AND status = 'off'
+                WHERE id = :id
             ");
             $stmt->execute(['id' => $id]);
     
-            // Verifica se alguma linha foi afetada
-            if ($stmt->rowCount() === 0) {
-                $this->conn->rollBack();
-                return false;
-            }
-    
-            // 2. Cria um novo registro de atividade
             $stmt = $this->conn->prepare("
-                INSERT INTO alarm_activity (alarm_id, status, started_at)
-                VALUES (:alarm_id, 'active', NOW())
+                INSERT INTO alarm_activity (alarm_id, started_at)
+                VALUES (:alarm_id, NOW())
             ");
             $stmt->execute(['alarm_id' => $id]);
     
@@ -82,83 +74,60 @@ class Alarm
         try {
             $this->conn->beginTransaction();
     
-            // 1. Verifica se o alarme existe e está ativo
-            $stmt = $this->conn->prepare("SELECT id, status FROM alarms WHERE id = :id");
+            $stmt = $this->conn->prepare("
+                UPDATE alarms 
+                SET status = 'off' 
+                WHERE id = :id
+            ");
             $stmt->execute(['id' => $id]);
-            $alarm = $stmt->fetch();
     
-            if (!$alarm) {
-                throw new Exception("Alarm not found");
-            }
-    
-            if ($alarm['status'] !== 'on') {
-                throw new Exception("Alarm is not active");
-            }
-    
-            // 2. Encontra a atividade ativa mais recente ou cria uma se não existir
             $stmt = $this->conn->prepare("
                 SELECT id FROM alarm_activity 
                 WHERE alarm_id = :alarm_id 
-                AND (status = 'active' OR ended_at IS NULL)
+                AND ended_at IS NULL
                 ORDER BY started_at DESC 
                 LIMIT 1
             ");
             $stmt->execute(['alarm_id' => $id]);
             $activity = $stmt->fetch();
     
-            if (!$activity) {
-                // Se não existir atividade, cria uma nova antes de desativar
+            if ($activity) {
                 $stmt = $this->conn->prepare("
-                    INSERT INTO alarm_activity (alarm_id, status, started_at, ended_at)
-                    VALUES (:alarm_id, 'inactive', NOW(), NOW())
+                    UPDATE alarm_activity 
+                    SET ended_at = NOW() 
+                    WHERE id = :id
                 ");
-                $stmt->execute(['alarm_id' => $id]);
-                $activityId = $this->conn->lastInsertId();
-            } else {
-                $activityId = $activity['id'];
+                $stmt->execute(['id' => $activity['id']]);
             }
-    
-            // 3. Atualiza o status do alarme
-            $stmt = $this->conn->prepare("UPDATE alarms SET status = 'off' WHERE id = :id");
-            $stmt->execute(['id' => $id]);
-    
-            // 4. Atualiza a atividade
-            $stmt = $this->conn->prepare("
-                UPDATE alarm_activity 
-                SET status = 'inactive', 
-                    ended_at = NOW() 
-                WHERE id = :id
-            ");
-            $stmt->execute(['id' => $activityId]);
     
             $this->conn->commit();
             return true;
     
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $this->conn->rollBack();
-            error_log("Deactivation failed: " . $e->getMessage());
+            error_log("Error deactivating alarm: " . $e->getMessage());
             return false;
         }
     }
-public function getTriggeredAlarms($filters = [], $orderBy = 'started_at', $orderDir = 'DESC')
-{
-    $query = "SELECT 
-                aa.id,
-                a.description AS alarm_description,
-                a.classification,
-                e.name AS equipment_name,
-                e.serial_number,
-                aa.started_at,
-                aa.ended_at,
-                aa.status,
-                CASE 
-                    WHEN aa.ended_at IS NULL THEN TIMESTAMPDIFF(SECOND, aa.started_at, NOW())
-                    ELSE TIMESTAMPDIFF(SECOND, aa.started_at, aa.ended_at)
-                END AS duration_seconds
-              FROM alarm_activity aa
-              JOIN alarms a ON aa.alarm_id = a.id
-              JOIN equipment e ON a.equipment_id = e.id
-              WHERE 1=1";
+    public function getTriggeredAlarms($filters = [], $orderBy = 'started_at', $orderDir = 'DESC')
+    {
+        $query = "SELECT 
+                    aa.id,
+                    a.description AS alarm_description,
+                    a.classification,
+                    e.name AS equipment_name,
+                    e.serial_number,
+                    aa.started_at,
+                    aa.ended_at,
+                    aa.status,
+                    CASE 
+                        WHEN aa.ended_at IS NULL THEN TIMESTAMPDIFF(SECOND, aa.started_at, NOW())
+                        ELSE TIMESTAMPDIFF(SECOND, aa.started_at, aa.ended_at)
+                    END AS duration_seconds
+                  FROM alarm_activity aa
+                  JOIN alarms a ON aa.alarm_id = a.id
+                  JOIN equipment e ON a.equipment_id = e.id
+                  WHERE 1=1";
         
         $params = [];
         
@@ -173,8 +142,11 @@ public function getTriggeredAlarms($filters = [], $orderBy = 'started_at', $orde
         }
         
         if (!empty($filters['status'])) {
-            $query .= " AND aa.status = :status";
-            $params['status'] = $filters['status'];
+            if ($filters['status'] === 'active') {
+                $query .= " AND aa.ended_at IS NULL";
+            } else {
+                $query .= " AND aa.ended_at IS NOT NULL";
+            }
         }
         
         $validColumns = ['started_at', 'ended_at', 'duration_seconds', 'alarm_description', 'equipment_name'];
@@ -186,9 +158,15 @@ public function getTriggeredAlarms($filters = [], $orderBy = 'started_at', $orde
         try {
             $stmt = $this->conn->prepare($query);
             $stmt->execute($params);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($result as &$row) {
+                $row['status'] = $row['ended_at'] === null ? 'active' : 'inactive';
+            }
+            
+            return $result;
         } catch (PDOException $e) {
-            error_log("Erro ao buscar alarmes atuados: " . $e->getMessage());
+            error_log("Error fetching alarm history: " . $e->getMessage());
             return false;
         }
     }
