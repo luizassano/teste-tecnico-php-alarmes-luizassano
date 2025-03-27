@@ -1,5 +1,5 @@
 <?php
-$baseUrl = '/teste-tecnico-php-alarmes-luizassano/public';
+$baseUrl = BASE_URL;
 ?>
 
 <!DOCTYPE html>
