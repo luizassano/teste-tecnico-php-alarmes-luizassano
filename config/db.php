@@ -1,10 +1,12 @@
 <?php
+require_once 'config.php';
+
 class Database
 {
-    private $host = 'localhost';
-    private $db_name = 'alarm_system';
-    private $username = 'root';
-    private $password = '';
+    private $host = DB_HOST;
+    private $db_name = DB_NAME;
+    private $username = DB_USER;
+    private $password = DB_PASS;
     private $conn;
 
     public function getConnection()
@@ -18,8 +20,7 @@ class Database
                 );
                 $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             } catch (PDOException $e) {
-                die("ERRO GRAVE: Não foi possível conectar ao banco de dados. 
-                    Contate o administrador. Erro técnico: " . $e->getMessage());
+                die("Teste erro: " . $e->getMessage());
             }
         }
         return $this->conn;
