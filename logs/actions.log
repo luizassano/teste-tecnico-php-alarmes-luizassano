@@ -152,3 +152,16 @@
 [2025-03-27 17:38:24] Updated alarm ID: 3
 [2025-03-27 17:38:30] Updated alarm ID: 3
 [2025-03-27 17:55:36] Created alarm: xadasdasddas
+[2025-03-27 18:24:29] Deleted alarm ID 2
+[2025-03-27 18:24:31] Deleted alarm ID 5
+[2025-03-27 18:24:32] Deleted alarm ID 3
+[2025-03-27 18:24:51] Deleted equipment ID: 7
+[2025-03-27 18:24:53] Deleted equipment ID: 4
+[2025-03-27 18:25:04] Created equipment: test 1
+[2025-03-27 18:25:25] Created alarm: test alarm
+[2025-03-27 18:25:27] Activated alarm ID 6
+[2025-03-27 18:26:36] Deleted equipment ID: 8
+[2025-03-27 18:29:03] Created equipment: test equipment
+[2025-03-27 18:29:11] Updated equipment ID: 9
+[2025-03-27 18:29:25] Created alarm: test alarm
+[2025-03-27 18:29:30] Activated alarm ID 7

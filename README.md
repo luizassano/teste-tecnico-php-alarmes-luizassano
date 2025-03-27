@@ -2,6 +2,10 @@
 
 Teste técnico para cadastro e manipulação de alarmes em equipamentos industriais.  
 
+## 🎥 Demonstração do Sistema
+[![Vídeo Demonstrativo do Sistema](https://img.youtube.com/vi/0ZYm27GEYus/0.jpg)](https://youtu.be/0ZYm27GEYus)  
+*(Clique na imagem para assistir ao vídeo completo)*
+
 ## 🚀 Funcionalidades Principais  
 
 ### 🔧 Equipamentos  
