@@ -30,6 +30,7 @@ if (!isset($sortUrls)) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,6 +39,7 @@ if (!isset($sortUrls)) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 </head>
+
 <body class="p-4 bg-light">
     <div class="container">
         <div class="card shadow-sm">
@@ -61,22 +63,23 @@ if (!isset($sortUrls)) {
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label for="description" class="form-label">Alarm Description</label>
-                            <input type="text" class="form-control" id="description" name="description" 
-                                   value="<?= htmlspecialchars($filters['description'] ?? '') ?>">
+                            <input type="text" class="form-control" id="description" name="description"
+                                value="<?= htmlspecialchars($filters['description'] ?? '') ?>">
                         </div>
                         <div class="col-md-4">
                             <label for="equipment" class="form-label">Equipment</label>
-                            <input type="text" class="form-control" id="equipment" name="equipment" 
-                                   value="<?= htmlspecialchars($filters['equipment'] ?? '') ?>">
+                            <input type="text" class="form-control" id="equipment" name="equipment"
+                                value="<?= htmlspecialchars($filters['equipment'] ?? '') ?>">
                         </div>
                         <div class="col-md-2">
-    <label for="status" class="form-label">Status</label>
-    <select class="form-select" id="status" name="status">
-        <option value="">All</option>
-        <option value="active" <?= ($filters['status'] ?? '') === 'active' ? 'selected' : '' ?>>Active</option>
-        <option value="inactive" <?= ($filters['status'] ?? '') === 'inactive' ? 'selected' : '' ?>>Inactive</option>
-    </select>
-</div>
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">All</option>
+                                <option value="active" <?= ($filters['status'] ?? '') === 'active' ? 'selected' : '' ?>>
+                                    Active</option>
+                                <option value="inactive" <?= ($filters['status'] ?? '') === 'inactive' ? 'selected' : '' ?>>Inactive</option>
+                            </select>
+                        </div>
                         <div class="col-md-2 d-flex align-items-end">
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="bi bi-funnel"></i> Filter
@@ -85,20 +88,33 @@ if (!isset($sortUrls)) {
                     </div>
                 </form>
 
-                <?php if (!empty($topAlarms)): ?>
-                    <div class="alert alert-info mb-4">
-                        <h5><i class="bi bi-trophy"></i> Most Frequent Alarms</h5>
+                <div class="alert alert-info mb-4">
+                    <h5><i class="bi bi-trophy"></i> Top 3 Most Frequent Alarms</h5>
+                    <?php if (!empty($topAlarms)): ?>
                         <div class="d-flex flex-wrap gap-3 mt-2">
-                            <?php foreach ($topAlarms as $top): ?>
-                                <div class="badge bg-warning text-dark p-2">
-                                    <i class="bi bi-exclamation-triangle-fill"></i>
-                                    <?= htmlspecialchars($top['description']) ?> 
-                                    <span class="badge bg-dark rounded-pill ms-1"><?= $top['trigger_count'] ?></span>
+                            <?php
+                            $topThree = array_slice($topAlarms, 0, 3);
+                            $medalClasses = ['bg-warning text-dark', 'bg-secondary text-white', 'bg-danger text-white'];
+
+                            foreach ($topThree as $index => $top): ?>
+                                <div class="badge <?= $medalClasses[$index] ?? 'bg-light text-dark' ?> p-2">
+                                    <i class="bi bi-<?=
+                                        $index === 0 ? 'trophy-fill' :
+                                        ($index === 1 ? 'award-fill' : 'exclamation-triangle-fill')
+                                        ?>"></i>
+                                    <?= htmlspecialchars($top['description'] ?? 'N/A') ?>
+                                    <span class="badge bg-dark rounded-pill ms-1">
+                                        <?= $top['trigger_count'] ?? 0 ?> time<?= ($top['trigger_count'] ?? 0) > 1 ? 's' : '' ?>
+                                    </span>
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                    </div>
-                <?php endif; ?>
+                    <?php else: ?>
+                        <div class="mt-2 text-muted">
+                            <i class="bi bi-info-circle"></i> No frequent alarm data available
+                        </div>
+                    <?php endif; ?>
+                </div>
 
                 <?php if (empty($triggeredAlarms)): ?>
                     <div class="alert alert-warning">No alarm history found.</div>
@@ -118,7 +134,8 @@ if (!isset($sortUrls)) {
                                     <th>Description / Classification</th>
                                     <th>Equipment</th>
                                     <th>
-                                        <a href="<?= $sortUrls['duration_seconds'] ?>" class="text-white text-decoration-none">
+                                        <a href="<?= $sortUrls['duration_seconds'] ?>"
+                                            class="text-white text-decoration-none">
                                             Duration
                                             <?php if ($orderBy === 'duration_seconds'): ?>
                                                 <i class="bi bi-caret-<?= $orderDir === 'ASC' ? 'up' : 'down' ?>-fill"></i>
@@ -133,18 +150,21 @@ if (!isset($sortUrls)) {
                                     <tr>
                                         <td>
                                             <div class="fw-bold"><?= date('d/m/Y', strtotime($alarm['started_at'])) ?></div>
-                                            <small class="text-muted"><?= date('H:i', strtotime($alarm['started_at'])) ?></small>
+                                            <small
+                                                class="text-muted"><?= date('H:i', strtotime($alarm['started_at'])) ?></small>
                                             <?php if (!empty($alarm['ended_at'])): ?>
                                                 <div class="mt-1">
-                                                    <small class="text-muted">Deactivated: <?= date('d/m/Y H:i', strtotime($alarm['ended_at'])) ?></small>
+                                                    <small class="text-muted">Deactivated:
+                                                        <?= date('d/m/Y H:i', strtotime($alarm['ended_at'])) ?></small>
                                                 </div>
                                             <?php endif; ?>
                                         </td>
                                         <td>
                                             <div class="fw-bold"><?= htmlspecialchars($alarm['alarm_description']) ?></div>
-                                            <span class="badge rounded-pill 
+                                            <span
+                                                class="badge rounded-pill 
                                                 <?= $alarm['classification'] === 'Urgent' ? 'bg-danger' :
-                                                   ($alarm['classification'] === 'Emergent' ? 'bg-warning' : 'bg-primary') ?>">
+                                                    ($alarm['classification'] === 'Emergent' ? 'bg-warning' : 'bg-primary') ?>">
                                                 <?= htmlspecialchars($alarm['classification']) ?>
                                             </span>
                                         </td>
@@ -158,7 +178,7 @@ if (!isset($sortUrls)) {
                                             $hours = floor($duration / 3600);
                                             $minutes = floor(($duration % 3600) / 60);
                                             $seconds = $duration % 60;
-                                            
+
                                             if ($hours > 0) {
                                                 echo sprintf("%dh %02dm %02ds", $hours, $minutes, $seconds);
                                             } elseif ($minutes > 0) {
@@ -169,8 +189,10 @@ if (!isset($sortUrls)) {
                                             ?>
                                         </td>
                                         <td>
-                                            <span class="badge rounded-pill bg-<?= $alarm['status'] === 'active' ? 'success' : 'secondary' ?>">
-                                                <i class="bi bi-<?= $alarm['status'] === 'active' ? 'power' : 'power-off' ?>"></i>
+                                            <span
+                                                class="badge rounded-pill bg-<?= $alarm['status'] === 'active' ? 'success' : 'secondary' ?>">
+                                                <i
+                                                    class="bi bi-<?= $alarm['status'] === 'active' ? 'power' : 'power-off' ?>"></i>
                                                 <?= $alarm['status'] === 'active' ? 'Active' : 'Inactive' ?>
                                             </span>
                                         </td>
@@ -197,4 +219,5 @@ if (!isset($sortUrls)) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

@@ -1,16 +1,19 @@
 <?php
 
 require_once __DIR__ . '/../config/db.php';
-class Equipment {
+class Equipment
+{
     private $conn;
     private $table = 'equipment';
 
-    public function __construct() {
+    public function __construct()
+    {
         $database = new Database();
         $this->conn = $database->getConnection();
     }
 
-    public function getAll() {
+    public function getAll()
+    {
         $query = "SELECT * FROM {$this->table} ORDER BY created_at DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -18,7 +21,8 @@ class Equipment {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getById($id) {
+    public function getById($id)
+    {
         $query = "SELECT * FROM {$this->table} WHERE id = :id LIMIT 1";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
@@ -27,7 +31,8 @@ class Equipment {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function create($data) {
+    public function create($data)
+    {
         $query = "INSERT INTO {$this->table} (name, serial_number, type) VALUES (:name, :serial_number, :type)";
         $stmt = $this->conn->prepare($query);
 
@@ -38,7 +43,8 @@ class Equipment {
         return $stmt->execute();
     }
 
-    public function update($id, $data) {
+    public function update($id, $data)
+    {
         $query = "UPDATE {$this->table} SET name = :name, serial_number = :serial_number, type = :type WHERE id = :id";
         $stmt = $this->conn->prepare($query);
 
@@ -50,7 +56,8 @@ class Equipment {
         return $stmt->execute();
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $query = "DELETE FROM {$this->table} WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);

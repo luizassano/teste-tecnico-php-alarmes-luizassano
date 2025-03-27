@@ -1,11 +1,9 @@
 <?php
-session_start(); 
+session_start();
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/controllers/EquipmentController.php';
 require_once __DIR__ . '/controllers/AlarmController.php';
 require_once __DIR__ . '/controllers/AlarmActivityController.php';
-
-
 
 $route = $_GET['route'] ?? 'equipment';
 
@@ -14,12 +12,30 @@ switch ($route) {
         $controller = new EquipmentController();
         $controller->index();
         break;
-        
+
     case 'equipment/create':
         $controller = new EquipmentController();
         $controller->create();
         break;
-        
+
+    case 'equipment/edit':
+        if (isset($_GET['id'])) {
+            $controller = new EquipmentController();
+            $controller->edit($_GET['id']);
+        } else {
+            header("Location: " . BASE_URL . "/?route=equipment");
+        }
+        break;
+
+    case 'equipment/update':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            $controller = new EquipmentController();
+            $controller->update();
+        } else {
+            header("Location: " . BASE_URL . "/?route=equipment");
+        }
+        break;
+
     case 'equipment/delete':
         if (isset($_GET['id'])) {
             $controller = new EquipmentController();
@@ -33,12 +49,12 @@ switch ($route) {
         $controller = new AlarmController();
         $controller->index();
         break;
-        
+
     case 'alarm/create':
         $controller = new AlarmController();
         $controller->create();
         break;
-        
+
     case 'alarm/activate':
         if (isset($_GET['id'])) {
             $controller = new AlarmController();
@@ -47,7 +63,7 @@ switch ($route) {
             header("Location: " . BASE_URL . "/?route=alarm");
         }
         break;
-        
+
     case 'alarm/deactivate':
         if (isset($_GET['id'])) {
             $controller = new AlarmController();
@@ -56,7 +72,7 @@ switch ($route) {
             header("Location: " . BASE_URL . "/?route=alarm");
         }
         break;
-        
+
     case 'alarm/delete':
         if (isset($_GET['id'])) {
             $controller = new AlarmController();
@@ -65,7 +81,21 @@ switch ($route) {
             header("Location: " . BASE_URL . "/?route=alarm");
         }
         break;
-        
+
+    case 'alarm/edit':
+        if (isset($_GET['id'])) {
+            $controller = new AlarmController();
+            $controller->edit($_GET['id']);
+        }
+        break;
+
+    case 'alarm/update':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller = new AlarmController();
+            $controller->update();
+        }
+        break;
+
     case 'alarm-activity':
         $controller = new AlarmActivityController();
         $controller->index();

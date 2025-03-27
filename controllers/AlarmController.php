@@ -48,22 +48,56 @@ class AlarmController
         require __DIR__ . '/../view/alarms/create.php';
     }
 
+    public function edit($id)
+    {
+        $alarm = $this->alarmModel->getById($id);
+        if (!$alarm) {
+            header('Location: ' . BASE_URL . '/?route=alarm');
+            exit;
+        }
+
+        $equipments = $this->equipmentModel->getAll();
+        require __DIR__ . '/../view/alarms/update.php';
+    }
+
+    public function update()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $data = [
+                'id' => $_POST['id'] ?? '',
+                'description' => $_POST['description'] ?? '',
+                'classification' => $_POST['classification'] ?? '',
+                'equipment_id' => $_POST['equipment_id'] ?? ''
+            ];
+
+            if ($this->alarmModel->update($data)) {
+                Logger::log("Updated alarm ID: {$data['id']}");
+                $_SESSION['success'] = "Alarm updated successfully";
+            } else {
+                $_SESSION['error'] = "Failed to update alarm";
+            }
+        }
+
+        header('Location: ' . BASE_URL . '/?route=alarm');
+        exit;
+    }
+
     public function activate($id)
     {
         $alarm = $this->alarmModel->getById($id);
-    
+
         if ($alarm && $alarm['status'] === 'off') {
             if ($this->alarmModel->activate($id)) {
                 Logger::log("Activated alarm ID $id");
                 $_SESSION['success'] = "Alarm activated successfully!";
-                
+
                 if ($alarm['classification'] === 'Urgent') {
                     $equipment = $this->equipmentModel->getById($alarm['equipment_id']);
                     $message = "Urgent Alarm Activated:\n";
                     $message .= "Description: {$alarm['description']}\n";
                     $message .= "Equipment: {$equipment['name']}\n";
                     $message .= "Serial: {$equipment['serial_number']}";
-                    
+
                     Mailer::send('admin@example.com', 'URGENT ALARM', $message);
                 }
             } else {
@@ -72,7 +106,7 @@ class AlarmController
         } else {
             $_SESSION['error'] = "Alarm is already active or not found";
         }
-    
+
         header('Location: ' . BASE_URL . '/?route=alarm');
         exit;
     }
@@ -89,7 +123,7 @@ class AlarmController
             $_SESSION['error'] = $e->getMessage();
             error_log("Deactivation error: " . $e->getMessage());
         }
-    
+
         header('Location: ' . BASE_URL . '/?route=alarm');
         exit;
     }

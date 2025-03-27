@@ -31,9 +31,6 @@ $baseUrl = '/teste-tecnico-php-alarmes-luizassano/public';
             </div>
 
             <div class="card-body">
-                <div class="row mb-4">
-                </div>
-
                 <?php if (empty($equipments)): ?>
                     <div class="alert alert-warning">No equipment found.</div>
                 <?php else: ?>
@@ -59,22 +56,25 @@ $baseUrl = '/teste-tecnico-php-alarmes-luizassano/public';
                                         <td><?= htmlspecialchars($equipment['serial_number']) ?></td>
                                         <td>
                                             <span class="badge rounded-pill 
-        <?= $equipment['type'] === 'Voltage' ? 'bg-danger' :
-            ($equipment['type'] === 'Current' ? 'bg-warning' : 'bg-info') ?>">
+                                                <?= $equipment['type'] === 'Voltage' ? 'bg-danger' :
+                                                   ($equipment['type'] === 'Current' ? 'bg-warning' : 'bg-info') ?>">
                                                 <?= $equipment['type'] ?>
                                             </span>
                                         </td>
                                         <td>
                                             <?= date('d/m/Y', strtotime($equipment['created_at'])) ?>
-                                            <small
-                                                class="d-block text-muted"><?= date('H:i', strtotime($equipment['created_at'])) ?></small>
+                                            <small class="d-block text-muted"><?= date('H:i', strtotime($equipment['created_at'])) ?></small>
                                         </td>
                                         <td class="text-end">
                                             <div class="btn-group btn-group-sm" role="group">
+                                                <a href="<?= $baseUrl ?>/?route=equipment/edit&id=<?= $equipment['id'] ?>" 
+                                                   class="btn btn-outline-primary" title="Edit">
+                                                    <i class="bi bi-pencil"></i> Edit
+                                                </a>
                                                 <a href="<?= $baseUrl ?>/?route=equipment/delete&id=<?= $equipment['id'] ?>"
-                                                    class="btn btn-outline-danger"
-                                                    onclick="return confirm('Are you sure you want to delete this equipment?')"
-                                                    title="Delete">
+                                                   class="btn btn-outline-danger"
+                                                   onclick="return confirm('Are you sure you want to delete this equipment?')"
+                                                   title="Delete">
                                                     <i class="bi bi-trash"></i> Delete
                                                 </a>
                                             </div>
@@ -102,5 +102,4 @@ $baseUrl = '/teste-tecnico-php-alarmes-luizassano/public';
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

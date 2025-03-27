@@ -20,27 +20,27 @@ class AlarmActivityController
                 'equipment' => $_GET['equipment'] ?? '',
                 'status' => $_GET['status'] ?? ''
             ];
-            
+
             $orderBy = $_GET['order_by'] ?? 'started_at';
             $orderDir = $_GET['order_dir'] ?? 'DESC';
-            
+
             $triggeredAlarms = $this->alarmModel->getTriggeredAlarms($filters, $orderBy, $orderDir);
             $topAlarms = $this->alarmModel->getMostTriggered(3);
-            
+
             if (!is_array($triggeredAlarms)) {
                 $triggeredAlarms = [];
             }
             if (!is_array($topAlarms)) {
                 $topAlarms = [];
             }
-    
+
             $sortUrls = [
                 'started_at' => $this->buildSortUrl('started_at'),
                 'duration_seconds' => $this->buildSortUrl('duration_seconds')
             ];
-    
+
             require __DIR__ . '/../view/alarm_activity/index.php';
-    
+
         } catch (Exception $e) {
             Logger::log("Error in AlarmActivityController: " . $e->getMessage());
             $_SESSION['error'] = "Error loading alarm history";

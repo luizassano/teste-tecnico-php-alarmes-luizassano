@@ -50,7 +50,7 @@ $baseUrl = '/teste-tecnico-php-alarmes-luizassano/public';
             </div>
 
             <div class="card-body">
-                <div class="row mb-4">
+                <!-- <div class="row mb-4">
                     <div class="col-md-8">
                     </div>
 
@@ -68,7 +68,7 @@ $baseUrl = '/teste-tecnico-php-alarmes-luizassano/public';
                             </div>
                         </div>
                     <?php endif; ?>
-                </div>
+                </div> -->
 
                 <?php if (empty($alarms)): ?>
                     <div class="alert alert-warning">No alarms registered.</div>
@@ -87,20 +87,23 @@ $baseUrl = '/teste-tecnico-php-alarmes-luizassano/public';
                             </thead>
                             <tbody>
                                 <?php foreach ($alarms as $alarm): ?>
-                                    <tr class="<?= in_array($alarm['id'], array_column($topAlarms, 'id')) ? 'table-warning' : '' ?>">
+                                    <tr
+                                        class="<?= in_array($alarm['id'], array_column($topAlarms, 'id')) ? 'table-warning' : '' ?>">
                                         <td>
                                             <div class="fw-bold"><?= htmlspecialchars($alarm['description']) ?></div>
                                             <small class="text-muted">ID: <?= $alarm['id'] ?></small>
                                         </td>
                                         <td>
-                                            <span class="badge rounded-pill 
+                                            <span
+                                                class="badge rounded-pill 
                                                 <?= $alarm['classification'] === 'Urgent' ? 'bg-danger' :
                                                     ($alarm['classification'] === 'Emergent' ? 'bg-warning' : 'bg-primary') ?>">
                                                 <?= htmlspecialchars($alarm['classification']) ?>
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge rounded-pill bg-<?= $alarm['status'] === 'on' ? 'success' : 'secondary' ?>">
+                                            <span
+                                                class="badge rounded-pill bg-<?= $alarm['status'] === 'on' ? 'success' : 'secondary' ?>">
                                                 <i class="bi bi-<?= $alarm['status'] === 'on' ? 'power' : 'power-off' ?>"></i>
                                                 <?= htmlspecialchars(ucfirst($alarm['status'])) ?>
                                             </span>
@@ -110,22 +113,31 @@ $baseUrl = '/teste-tecnico-php-alarmes-luizassano/public';
                                         </td>
                                         <td>
                                             <?= date('d/m/Y', strtotime($alarm['created_at'])) ?>
-                                            <small class="d-block text-muted"><?= date('H:i', strtotime($alarm['created_at'])) ?></small>
+                                            <small
+                                                class="d-block text-muted"><?= date('H:i', strtotime($alarm['created_at'])) ?></small>
                                         </td>
                                         <td class="text-end">
                                             <div class="btn-group btn-group-sm" role="group">
                                                 <?php if ($alarm['status'] === 'off'): ?>
-                                                    <a href="<?= $baseUrl ?>/?route=alarm/activate&id=<?= $alarm['id'] ?>" class="btn btn-outline-success" title="Activate">
+                                                    <a href="<?= $baseUrl ?>/?route=alarm/activate&id=<?= $alarm['id'] ?>"
+                                                        class="btn btn-outline-success" title="Activate">
                                                         <i class="bi bi-power"></i> Activate
                                                     </a>
                                                 <?php else: ?>
-                                                    <a href="<?= $baseUrl ?>/?route=alarm/deactivate&id=<?= $alarm['id'] ?>" class="btn btn-outline-warning" title="Deactivate">
+                                                    <a href="<?= $baseUrl ?>/?route=alarm/deactivate&id=<?= $alarm['id'] ?>"
+                                                        class="btn btn-outline-warning" title="Deactivate">
                                                         <i class="bi bi-plug-fill"></i> Deactivate
                                                     </a>
                                                 <?php endif; ?>
 
-                                                <a href="<?= $baseUrl ?>/?route=alarm/delete&id=<?= $alarm['id'] ?>" class="btn btn-outline-danger" onclick="return confirm('Delete this alarm?')" title="Delete">
+                                                <a href="<?= $baseUrl ?>/?route=alarm/delete&id=<?= $alarm['id'] ?>"
+                                                    class="btn btn-outline-danger"
+                                                    onclick="return confirm('Delete this alarm?')" title="Delete">
                                                     <i class="bi bi-trash"></i> Delete
+                                                </a>
+                                                <a href="<?= $baseUrl ?>/?route=alarm/edit&id=<?= $alarm['id'] ?>"
+                                                    class="btn btn-outline-primary me-2" title="Edit">
+                                                    <i class="bi bi-pencil"></i> Edit
                                                 </a>
                                             </div>
                                         </td>
